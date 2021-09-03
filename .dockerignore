@@ -1,2 +1,15 @@
-node_modules
-lib/*
+.env.test
+.github
+.gitignore
+.npmignore
+.travis
+.travis.yml
+CHANGELOG.md
+infrastructure/
+lib/
+LICENSE
+node_modules/
+packaging/
+performance/
+README.md
+test/

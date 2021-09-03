@@ -11,6 +11,8 @@ COPY package.json package-lock.json /app/
 RUN npm ci --production
 COPY config /app/config/
 COPY --from=build /app/lib/ /app/lib/
+COPY resources /app/resources/
+COPY templates /app/templates/
 USER node
 EXPOSE 8080
 EXPOSE 5000
