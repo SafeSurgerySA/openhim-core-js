@@ -7,6 +7,7 @@ RUN npm run build
 
 FROM node:14.17.6-alpine3.14
 WORKDIR /app
+RUN apk add --no-cache curl
 COPY package.json package-lock.json /app/
 RUN npm ci --production
 COPY config /app/config/
