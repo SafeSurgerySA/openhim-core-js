@@ -1,9 +1,13 @@
 name: Build and Publish Docker Image
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - master
 
 env:
-  ECR: 617824243747.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_PROD: 271399925085.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_QA: 617824243747.dkr.ecr.eu-west-1.amazonaws.com
   GHCR: ghcr.io
 
 jobs:
@@ -29,15 +33,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS Credentials
+      - name: Configure QA AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Log in to AWS ECR
-        id: login-ecr
+      - name: Log in to QA AWS ECR
+        id: login-qa-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Configure PROD AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Log in to PROD AWS ECR
+        id: login-prod-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and Push Docker Image
@@ -46,7 +61,9 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.ECR }}/openhim-core:latest
-            ${{ env.ECR }}/openhim-core:${{ github.sha }}
+            ${{ env.ECR_PROD }}/openhim-core:latest
+            ${{ env.ECR_PROD }}/openhim-core:${{ github.sha }}
+            ${{ env.ECR_QA }}/openhim-core:latest
+            ${{ env.ECR_QA }}/openhim-core:${{ github.sha }}
             ${{ env.GHCR }}/safesurgerysa/openhim-core:latest
             ${{ env.GHCR }}/safesurgerysa/openhim-core:${{ github.sha }}
