@@ -68,7 +68,8 @@ export function setupApp(done) {
   app.use(
     compress({
       threshold: 8,
-      flush: Z_SYNC_FLUSH
+      flush: Z_SYNC_FLUSH,
+      br: false
     })
   )
 
