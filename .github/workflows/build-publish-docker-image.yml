@@ -7,7 +7,9 @@ on:
 
 env:
   ECR_PROD: 271399925085.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_PROD_ROLE: arn:aws:iam::271399925085:role/safesurgerysa-prod-pshr-openhim-core-ecr-role
   ECR_QA: 617824243747.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_QA_ROLE: arn:aws:iam::617824243747:role/safesurgerysa-qa-pshr-openhim-core-ecr-role
   GHCR: ghcr.io
 
 jobs:
@@ -17,6 +19,7 @@ jobs:
 
     permissions:
       contents: read
+      id-token: write
       packages: write
 
     steps:
@@ -34,10 +37,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure QA AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.QA_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.QA_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ env.ECR_QA_ROLE }}
           aws-region: eu-west-1
 
       - name: Log in to QA AWS ECR
@@ -45,10 +47,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Configure PROD AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ env.ECR_PROD_ROLE }}
           aws-region: eu-west-1
 
       - name: Log in to PROD AWS ECR
